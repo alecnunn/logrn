@@ -1,0 +1,24 @@
+{
+    "pluginmetadataversion": 2,
+    "name": "logrn-revamped",
+    "author": "tw0straws",
+    "type": [
+        "helper"
+    ],
+    "api": [
+        "python3"
+    ],
+    "description": "Binary Ninja plugin for abusing logging functions to rename functions",
+    "longdescription": "Binary Ninja plugin for abusing logging functions to rename functions",
+    "license": {
+        "name": "MIT",
+        "text": ""
+    },
+    "platforms": [
+        "Darwin",
+        "Windows",
+        "Linux"
+    ],
+    "version": "1.0.0",
+    "minimumbinaryninjaversion": 3558
+}
