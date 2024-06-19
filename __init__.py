@@ -2,7 +2,7 @@ from concurrent.futures import ThreadPoolExecutor, wait, as_completed
 import threading
 from queue import Queue
 
-from binaryninja.interaction import get_text_line_input, get_choice_input
+from binaryninja.interaction import get_choice_input
 from binaryninja.mediumlevelil import MediumLevelILInstruction
 from binaryninja.enums import MediumLevelILOperation as mlilop
 from binaryninja.log import log_info, log_error
@@ -45,17 +45,14 @@ class RenameTask(BackgroundTaskThread):
         self.log_thread.start()
 
     def run(self):
-        param_str: str = get_text_line_input("Enter name of parameter", "").decode("utf-8")
-        try:
-            param = next(p for p in self.func.parameter_vars if p.name == param_str)
-            param_index: int = self.func.parameter_vars.vars.index(param)
-        except StopIteration:
-            log_error(f"arg {param_str} not found")
+        choices = [n.name for n in self.func.type.parameters]
+        param_index: int|None = get_choice_input("Select parameter to use as name", "logrn", choices)
+        if param_index is None:
             return
         callers_length = len(self.func.callers)
         log_info(f"Processing {len(self.func.callers)} callers")
         renamed_count = 0
-        futures = [self.thread_pool_executor.submit(rename_caller, self.func, caller, param_index, self.log_queue) for caller in self.func.callers]
+        futures = [self.thread_pool_executor.submit(rename_caller, self.func, caller, param_index, self.log_queue) for caller in self.func.callers if caller.symbol.auto]
         for future in as_completed(futures):
             if future.result():
                 renamed_count += 1
